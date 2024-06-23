@@ -47,7 +47,37 @@ const createUser = async (req, res) => {
         });
     }
 };
+const loginUser = async (req, res) => {
+    try {
+        const {name ,email ,password,confirmPassword,phone} = req.body;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isCheckEmail = emailRegex.test(email) 
+        if(!name || !email || !password || !confirmPassword || !phone){
+            return res.status(200).json({
+                status: 'error',
+                message:'The input is required',
+            })
+        }else if(!isCheckEmail) {
+            return res.status(200).json({
+                status: 'error',
+                message:'The email is invalid',
+            })
+        }else if(password !== confirmPassword) {
+            return res.status(200).json({
+                status: 'error',
+                message:'The password is invalid',
+            })
+        }
+        const result = await UserService.loginUser(req.body);
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(404).json({
+            message: error.message || 'An error occurred'
+        });
+    }
+};
 
 module.exports = {
-    createUser
+    createUser,
+    loginUser
 };
